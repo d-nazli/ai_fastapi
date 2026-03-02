@@ -1,0 +1,62 @@
+[
+  {
+    "userId": "user1",
+    "userName": "Ahmet Yılmaz",
+    "transcriptText": "Merhaba, bugün sizinle iş görüşmemizi gerçekleştireceğiz. Kendinizi tanıtır mısınız?",
+    "spokenAt": "2026-03-01T10:00:00Z"
+  },
+  {
+    "userId": "user2",
+    "userName": "Elif Demir",
+    "transcriptText": "Merhaba, ben Elif Demir. İstanbul Teknik Üniversitesi Bilgisayar Mühendisliği bölümünden 2023 yılında mezun oldum. Son iki yıldır bir yazılım şirketinde backend developer olarak çalışıyorum. Python ve Django ile web uygulamaları geliştirdim, ayrıca FastAPI ile mikroservis mimarisi üzerinde projeler yürüttüm.",
+    "spokenAt": "2026-03-01T10:01:00Z"
+  },
+  {
+    "userId": "user1",
+    "userName": "Ahmet Yılmaz",
+    "transcriptText": "Güzel, tecrübeniz etkileyici. Peki neden bu pozisyona başvurdunuz? Şirketimizde sizi en çok ne çekti?",
+    "spokenAt": "2026-03-01T10:02:00Z"
+  },
+  {
+    "userId": "user2",
+    "userName": "Elif Demir",
+    "transcriptText": "Şirketinizin yapay zeka alanındaki çalışmalarını takip ediyorum. Özellikle NLP projeleri beni çok heyecanlandırıyor. Kendi projelerimde de Hugging Face modelleriyle çalıştım ve bu alandaki deneyimimi daha büyük ölçekli projelerde kullanmak istiyorum. Ayrıca şirketinizin mühendislik kültürü ve takım çalışmasına verdiği önem benim için çok değerli.",
+    "spokenAt": "2026-03-01T10:03:00Z"
+  },
+  {
+    "userId": "user1",
+    "userName": "Ahmet Yılmaz",
+    "transcriptText": "Teknik becerilerinizden bahseder misiniz? Hangi teknolojilere hakimsiniz?",
+    "spokenAt": "2026-03-01T10:04:00Z"
+  },
+  {
+    "userId": "user2",
+    "userName": "Elif Demir",
+    "transcriptText": "Ana programlama dilim Python. Django ve FastAPI frameworklerinde ileri seviye deneyimim var. PostgreSQL ve Redis ile çalıştım. Docker ve Kubernetes bilgim var, CI/CD pipeline'ları kurdum. Ayrıca React ile frontend tarafında da temel seviyede çalışabiliyorum. Son projemde bir chatbot uygulaması geliştirdim ve bu projede WebSocket, SSE gibi real-time teknolojiler kullandım.",
+    "spokenAt": "2026-03-01T10:05:00Z"
+  },
+  {
+    "userId": "user1",
+    "userName": "Ahmet Yılmaz",
+    "transcriptText": "Bir projede karşılaştığınız en büyük zorluk neydi ve nasıl çözdünüz?",
+    "spokenAt": "2026-03-01T10:06:00Z"
+  },
+  {
+    "userId": "user2",
+    "userName": "Elif Demir",
+    "transcriptText": "Önceki projemde büyük veri setleriyle çalışırken performans sorunları yaşadık. Veritabanı sorguları çok yavaş çalışıyordu. Ben önce sorguları analiz ettim, indexleme stratejisi geliştirdim ve caching mekanizması ekledim. Ayrıca bazı hesaplamaları asenkron task queue'lara taşıdım. Bu değişikliklerle yanıt süresini 12 saniyeden 200 milisaniyeye düşürdük. Bu deneyim bana sistematik problem çözmenin önemini öğretti.",
+    "spokenAt": "2026-03-01T10:07:00Z"
+  },
+  {
+    "userId": "user1",
+    "userName": "Ahmet Yılmaz",
+    "transcriptText": "Çok güzel bir örnek. Takım çalışması hakkında ne düşünüyorsunuz? Liderlik deneyiminiz var mı?",
+    "spokenAt": "2026-03-01T10:08:00Z"
+  },
+  {
+    "userId": "user2",
+    "userName": "Elif Demir",
+    "transcriptText": "Takım çalışmasına çok önem veriyorum. Son projemde 4 kişilik bir ekibin teknik liderliğini üstlendim. Sprint planlaması, code review süreçleri ve pair programming seansları organize ettim. Ayrıca junior geliştiricilere mentorluk yaptım. İletişimin ve şeffaflığın başarılı bir takım için en önemli faktörler olduğuna inanıyorum. Zayıf yönüm olarak bazen çok detaycı olabiliyorum ama bunu farkında olarak yönetmeye çalışıyorum.",
+    "spokenAt": "2026-03-01T10:09:00Z"
+  }
+]
