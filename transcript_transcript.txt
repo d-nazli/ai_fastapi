@@ -1,0 +1,6 @@
+Interviewer: Kendinizden bahseder misiniz?
+Candidate: Fırat Üniversitesi Yazılım Mühendisliği öğrencisiyim. Veri bilimi ve yapay zeka alanında projeler geliştirdim.
+Interviewer: Hangi teknolojileri kullandınız?
+Candidate: Python, Scikit-learn, XGBoost, PyTorch ve FastAPI kullandım.
+Interviewer: Takım çalışması deneyiminiz var mı?
+Candidate: Hackathonlara katıldım ve ekip projelerinde aktif rol aldım.

@@ -16,6 +16,12 @@ from fastapi import APIRouter
 from schemas.transcript import TranscriptAnalyzeRequest, TranscriptAnalyzeResponse
 from services.file_reader_service import collect_transcripts, extract_transcript_from_json
 from services.lm_studio_service import lm_studio_service
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from core import get_db
+from services.ai_log_service import ai_log_service
+import time
+
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +34,18 @@ router = APIRouter(prefix="/chat", tags=["transcript"])
 )
 async def analyze_json_transcript_with_summary(
     body: TranscriptAnalyzeRequest,
+    db: AsyncSession = Depends(get_db),
 ) -> TranscriptAnalyzeResponse:
+    start_time = time.time()
+    request_id = await ai_log_service.create_request_log(
+    db=db,
+    user_id="system",
+    endpoint="/chat/analyze-json-transcript-with-summary",
+    model_name="qwen",
+    transcript_length=0,
+    prompt_length=0,
+    temperature=0.3
+)
     json_path = body.json_path
     transcript_save_path: Optional[str] = None
 
@@ -86,7 +103,7 @@ async def analyze_json_transcript_with_summary(
 
     try:
         combined_prompt = _build_analysis_prompt(json_path, transcript)
-
+        t0 = time.time()
         ai_response = await lm_studio_service.send_direct_message(
             prompt=combined_prompt,
             temperature=0.3,
@@ -94,11 +111,39 @@ async def analyze_json_transcript_with_summary(
         )
 
         context_type, summary = _parse_ai_response(ai_response, json_path)
+        duration = int((time.time() - t0) * 1000)
+        await ai_log_service.create_task_log(
+    db=db,
+    request_id=request_id,
+    task_name="TRANSCRIPT_ANALYSIS",
+    model_name="qwen",
+    duration_ms=duration,
+    response_length=len(ai_response) if ai_response else 0,
+    status="SUCCESS",
+)
 
     except Exception as exc:
+        duration = int((time.time() - t0) * 1000)
+        await ai_log_service.create_task_log(
+    db=db,
+    request_id=request_id,
+    task_name="TRANSCRIPT_ANALYSIS",
+    model_name="qwen",
+    duration_ms=duration,
+    response_length=0,
+    status="FAILED",
+    error_type=type(exc).__name__,
+    error_message=str(exc),
+)
         logger.exception("AI analysis error (JSON): %s", exc)
         return TranscriptAnalyzeResponse(success=False, error=f"AI analiz hatası: {exc}")
-
+    total_time = int((time.time() - start_time) * 1000)
+    await ai_log_service.update_request_log(
+    db=db,
+    request_id=request_id,
+    status="SUCCESS",
+    total_response_time_ms=total_time
+)
     resp = TranscriptAnalyzeResponse(
         success=True,
         json_path=json_path,

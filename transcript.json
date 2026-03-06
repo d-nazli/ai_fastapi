@@ -1,0 +1,50 @@
+{
+  "context_type": "MÜLAKAT",
+  "candidate": {
+    "firstName": "Elif",
+    "lastName": "Demir",
+    "position": "AI & Data Science Intern"
+  },
+  "interview": {
+    "date": "2026-03-03",
+    "language": "tr",
+    "duration_minutes": 32
+  },
+  "transcript": [
+    {
+      "speaker": "Interviewer",
+      "text": "Kendinizden ve teknik geçmişinizden bahseder misiniz?"
+    },
+    {
+      "transcriptText": "Interviewer: Kendinizden bahseder misiniz?\nCandidate: Fırat Üniversitesi Yazılım Mühendisliği öğrencisiyim. Veri bilimi ve yapay zeka alanında projeler geliştirdim.\nInterviewer: Hangi teknolojileri kullandınız?\nCandidate: Python, Scikit-learn, XGBoost, PyTorch ve FastAPI kullandım.\nInterviewer: Takım çalışması deneyiminiz var mı?\nCandidate: Hackathonlara katıldım ve ekip projelerinde aktif rol aldım."
+    },
+    {
+      "speaker": "Candidate",
+      "text": "Fırat Üniversitesi Yazılım Mühendisliği öğrencisiyim. Veri bilimi ve yapay zeka alanında projeler geliştirdim. Erasmus stajımda makine öğrenmesi modelleri eğittim ve model performans analizleri yaptım."
+    },
+    {
+      "speaker": "Interviewer",
+      "text": "Hangi teknolojileri kullandınız?"
+    },
+    {
+      "speaker": "Candidate",
+      "text": "Python, Scikit-learn, XGBoost, PyTorch ve FastAPI kullandım. NLP projelerinde TF-IDF ve Transformer tabanlı modellerle çalıştım."
+    },
+    {
+      "speaker": "Interviewer",
+      "text": "Takım çalışması deneyiminiz var mı?"
+    },
+    {
+      "speaker": "Candidate",
+      "text": "Hackathonlara katıldım ve ekip projelerinde aktif rol aldım. Görev paylaşımı ve koordinasyon süreçlerinde yer aldım."
+    },
+    {
+      "speaker": "Interviewer",
+      "text": "Bir problemi nasıl çözersiniz?"
+    },
+    {
+      "speaker": "Candidate",
+      "text": "Önce problemi parçalara ayırırım, veri analizi yaparım ve farklı model yaklaşımlarını denerim. Sonrasında performans metriklerine göre en uygun çözümü seçerim."
+    }
+  ]
+}

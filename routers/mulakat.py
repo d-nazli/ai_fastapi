@@ -9,15 +9,20 @@ import asyncio
 import logging
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from fastapi import APIRouter
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, APIRouter
 
+from core import get_db
 from core.settings import settings
+
 from schemas.mulakat import MulakatDegerlendirmeRequest, MulakatDegerlendirmeResponse
+
 from services.file_reader_service import read_transcript_file
 from services.lm_studio_service import lm_studio_service
 from services.webhook_service import fire_and_forget_webhook
+from services.ai_log_service import ai_log_service
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +30,7 @@ router = APIRouter(prefix="/chat", tags=["mulakat"])
 
 MAX_TEXT_LENGTH = 15000
 AI_TEMPERATURE = 0.3
+
 
 # ── PROMPTS ───────────────────────────────────────────────
 
@@ -64,12 +70,15 @@ Her beceri için puanlama yap. Kesinlikle Türkçe cevap ver."""
 )
 async def mulakat_degerlendirme(
     body: MulakatDegerlendirmeRequest,
+    db: AsyncSession = Depends(get_db),
 ) -> MulakatDegerlendirmeResponse:
+
     user_id = body.userId
     first_name = body.firstName
     last_name = body.lastName
     email = body.email
     transcript_path = body.transcriptPath
+
     candidate_full_name = f"{first_name} {last_name}"
 
     logger.info(
@@ -91,6 +100,7 @@ async def mulakat_degerlendirme(
             transcript_path = os.path.join(base, transcript_path)
 
     interview_text, error = read_transcript_file(transcript_path)
+
     if error:
         logger.warning("File read error: %s", error)
         return MulakatDegerlendirmeResponse(success=False, error=error)
@@ -101,32 +111,65 @@ async def mulakat_degerlendirme(
     if len(interview_text) > MAX_TEXT_LENGTH:
         interview_text = interview_text[:MAX_TEXT_LENGTH]
 
+    request_id = await ai_log_service.create_request_log(
+        db=db,
+        user_id=str(user_id),
+        endpoint="/chat/mulakat-degerlendirme",
+        model_name=settings.ai_model,
+        transcript_length=len(interview_text),
+        prompt_length=len(interview_text),
+        temperature=AI_TEMPERATURE,
+    )
+
     start_time = time.time()
+    request_status = "SUCCESS"
+
+    # ── AI ANALYSIS FUNCTION ───────────────────────────────
 
     async def _analyze(prompt: str, task_name: str) -> Dict[str, Any]:
+
         t0 = time.time()
+
         try:
+
             full_prompt = (
                 "Sen uzman bir İK analistisin. Markdown kullan. "
                 "Sadece final sonucu ver, düşünme adımlarını gösterme.\n\n"
                 + prompt
             )
+
             content = await lm_studio_service.send_direct_message(
                 prompt=full_prompt,
                 temperature=AI_TEMPERATURE,
                 timeout=1200,
             )
-            dur = round(time.time() - t0, 1)
+
+            dur = round((time.time() - t0) * 1000)
+
             return {
-                "status": "success" if content else "failed",
+                "task_name": task_name,
+                "status": "SUCCESS" if content else "FAILED",
                 "content": content,
                 "duration": dur,
                 "error": None if content else "Boş yanıt",
             }
+
         except Exception as exc:
-            dur = round(time.time() - t0, 1)
+
+            request_status = "FAILED"
+            dur = round((time.time() - t0) * 1000)
+
             err = "Context limiti aşıldı" if "Context size" in str(exc) else str(exc)
-            return {"status": "failed", "content": None, "duration": dur, "error": err}
+
+            return {
+                "task_name": task_name,
+                "status": "FAILED",
+                "content": None,
+                "duration": dur,
+                "error": err,
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+            }
 
     suffix = f"\n\n--- METİN ---\n{interview_text}"
 
@@ -134,16 +177,46 @@ async def mulakat_degerlendirme(
         PROMPT_SCORING.format(candidate_name=candidate_full_name) + suffix,
         "SCORING",
     )
+
     recruiter_task = _analyze(
         PROMPT_RECRUITER.format(candidate_name=candidate_full_name) + suffix,
         "RECRUITER",
     )
-    technical_task = _analyze(PROMPT_TECHNICAL + suffix, "TECHNICAL")
-    soft_task = _analyze(PROMPT_SOFT_SKILLS + suffix, "SOFT_SKILLS")
+
+    technical_task = _analyze(
+        PROMPT_TECHNICAL + suffix,
+        "TECHNICAL",
+    )
+
+    soft_task = _analyze(
+        PROMPT_SOFT_SKILLS + suffix,
+        "SOFT_SKILLS",
+    )
 
     scoring, recruiter, technical, soft_skills = await asyncio.gather(
-        scoring_task, recruiter_task, technical_task, soft_task
+        scoring_task,
+        recruiter_task,
+        technical_task,
+        soft_task,
     )
+
+    # ── DB TASK LOG (SEQUENTIAL) ───────────────────────────
+
+    results = [scoring, recruiter, technical, soft_skills]
+
+    for r in results:
+
+        await ai_log_service.create_task_log(
+            db=db,
+            request_id=request_id,
+            task_name=r["task_name"],
+            model_name=settings.ai_model,
+            duration_ms=r["duration"],
+            response_length=len(r["content"]) if r["content"] else 0,
+            status=r["status"],
+            error_type=r.get("error_type"),
+            error_message=r.get("error_message"),
+        )
 
     total_time = time.time() - start_time
 
@@ -167,6 +240,13 @@ async def mulakat_degerlendirme(
     }
 
     fire_and_forget_webhook(webhook_payload)
+
+    await ai_log_service.update_request_log(
+        db=db,
+        request_id=request_id,
+        status=request_status,
+        total_response_time_ms=int(total_time * 1000),
+    )
 
     return MulakatDegerlendirmeResponse(
         success=True,

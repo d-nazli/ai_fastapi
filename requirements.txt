@@ -5,3 +5,8 @@ pydantic-settings
 python-dotenv
 httpx
 python-docx
+SQLAlchemy
+asyncpg
+alembic
+psycopg2-binary
+asyncpg

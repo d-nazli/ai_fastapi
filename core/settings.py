@@ -34,6 +34,8 @@ class Settings(BaseSettings):
     debug: bool = Field(default=True, alias="DEBUG")
     log_level: str = Field(default="info", alias="LOG_LEVEL")
 
+    database_url: str = Field(default="postgresql+asyncpg://postgres:123456@localhost:5432/intelliumai", alias="DATABASE_URL")
+
     # ── LM STUDIO ─────────────────────────────────────────
     lm_studio_host: str = Field(default="localhost", alias="LM_STUDIO_HOST")
     lm_studio_port: int = Field(default=1234, alias="LM_STUDIO_PORT")

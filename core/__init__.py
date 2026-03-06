@@ -3,6 +3,7 @@ Core package — settings, middleware, exceptions
 """
 
 from .settings import Settings, settings
+from .db import engine, AsyncSessionLocal, get_db
 from .exceptions import (
     ServiceError,
     ValidationError,
@@ -26,6 +27,9 @@ from .middleware import (
 __all__ = [
     "Settings",
     "settings",
+    "engine",
+    "get_db",
+    "AsyncSessionLocal",
     "ServiceError",
     "ValidationError",
     "NotFoundError",
